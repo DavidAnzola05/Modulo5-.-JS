@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="nombreDAAC">
+<input id="precioDAAC">
+<button onclick="crearDAAC()">Crear</button>
+<ul id="listaDAAC"></ul>
+
+<script>
+async function cargarDAAC() {
+    const rDAAC = await fetch("http://localhost:4000/itemsDAAC")
+    const dDAAC = await rDAAC.json()
+    const lDAAC = document.getElementById("listaDAAC")
+    lDAAC.innerHTML = ""
+    dDAAC.forEach(iDAAC => {
+        lDAAC.innerHTML += `
+            <li>
+                ${iDAAC.nombredaac} - ${iDAAC.preciodaac}
+                <button onclick="editarDAAC(${iDAAC.iddaac})">Editar</button>
+                <button onclick="eliminarDAAC(${iDAAC.iddaac})">Eliminar</button>
+            </li>
+        `
+    })
+}
+
+async function crearDAAC() {
+    const nombreDAAC = document.getElementById("nombreDAAC").value
+    const precioDAAC = document.getElementById("precioDAAC").value
+    await fetch("http://localhost:4000/itemsDAAC", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombreDAAC, precioDAAC })
+    })
+    cargarDAAC()
+}
+
+async function editarDAAC(idDAAC) {
+    const nombreDAAC = prompt("Nuevo nombre DAAC")
+    const precioDAAC = prompt("Nuevo precio DAAC")
+    await fetch(`http://localhost:4000/itemsDAAC/${idDAAC}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombreDAAC, precioDAAC })
+    })
+    cargarDAAC()
+}
+
+async function eliminarDAAC(idDAAC) {
+    await fetch(`http://localhost:4000/itemsDAAC/${idDAAC}`, {
+        method: "DELETE"
+    })
+    cargarDAAC()
+}
+
+cargarDAAC()
+</script>
+</body>
+</html>
